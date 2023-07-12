@@ -1,6 +1,5 @@
 const token = document.getElementById("token");
 const button = document.getElementById("button");
-// const disconnected = document.getElementById('disconnected');
 
 button.addEventListener("click", () => {
   const roomToken = token.value;
@@ -32,10 +31,10 @@ button.addEventListener("click", () => {
 
       const newButton = document.createElement("button");
       newButton.textContent = "Video On";
+      newButton.classList.add("btn","btn-warning","m-3")
       document.body.appendChild(newButton);
 
       newButton.addEventListener("click", () => {
-
         document.body.removeChild(newButton);
         document.body.appendChild(videobtn);
 
@@ -46,15 +45,15 @@ button.addEventListener("click", () => {
           localMediaContainer?.appendChild(track.attach());
 
           room.localParticipant.publishTrack(track);
-         
         });
       });
 
       const videobtn = document.createElement("button");
       videobtn.textContent = "Video Off";
+      videobtn.classList.add("btn","btn-danger","m-3")
+
 
       videobtn.addEventListener("click", () => {
-
         document.body.removeChild(videobtn);
         document.body.appendChild(newButton);
 
@@ -64,51 +63,58 @@ button.addEventListener("click", () => {
 
           publication.track.detach().forEach(function (mediaElement) {
             mediaElement.remove();
+          });
         });
       });
-    });
 
       // for audio
       const audioButton = document.createElement("button");
       audioButton.textContent = "Audio On";
+      audioButton.classList.add("btn","btn-warning","m-3")
       document.body.appendChild(audioButton);
-      
 
       audioButton.addEventListener("click", () => {
-        document.body.removeChild(audioButton)
+        document.body.removeChild(audioButton);
         document.body.appendChild(audiobtn);
 
-        Twilio.Video.createLocalAudioTrack().then((track) => {
+        Twilio.Video.createLocalAudioTrack({ audio: true }).then((track) => {
           room.localParticipant.publishTrack(track);
-          
+          console.log(track);
         });
       });
 
       const audiobtn = document.createElement("button");
       audiobtn.textContent = "Audio Off";
+      audiobtn.classList.add("btn","btn-danger","m-3")
       
-      audiobtn.addEventListener("click", () => {
 
+      audiobtn.addEventListener("click", () => {
         document.body.removeChild(audiobtn);
         document.body.appendChild(audioButton);
-
 
         room.localParticipant.audioTracks.forEach((publication) => {
           publication.track.stop();
           publication.unpublish();
-         console.log(publication.track)
+          console.log(publication.track);
         });
       });
-
-
 
       // remote participant
       room.on("trackSubscribed", () => {
         console.log("trackSubscribed");
         room.participants.forEach((participant) => {
+         
           participant.tracks.forEach((publication) => {
-            console.log(publication.track.kind);
-            if (publication.track) {
+            
+            console.log(publication);
+
+            if (publication.track.kind === "audio") {
+
+              const audiotrack = document.createElement("audio");
+              audiotrack.appendChild(publication.track.attach());
+
+            } else if (publication.track.kind === "video") {
+
               const localMediaContainer =
                 document.getElementById("remote-media-div");
               localMediaContainer.appendChild(publication.track.attach());
