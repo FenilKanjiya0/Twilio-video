@@ -79,17 +79,14 @@ button.addEventListener("click", () => {
         document.body.appendChild(audiobtn);
 
         Twilio.Video.createLocalAudioTrack().then((track) => {
-          const audio = track;
-          console.log(audio);
-
-          room.localParticipant.publishTrack(audio);
+          room.localParticipant.publishTrack(track);
           
         });
       });
+
       const audiobtn = document.createElement("button");
       audiobtn.textContent = "Audio Off";
       
-
       audiobtn.addEventListener("click", () => {
 
         document.body.removeChild(audiobtn);
@@ -100,14 +97,6 @@ button.addEventListener("click", () => {
           publication.track.stop();
           publication.unpublish();
          console.log(publication.track)
-        //  publication.track.enable(!publication.track.isEnabled)
-        //  if(publication.track.isEnabled){
-        //   audiobtn.textContent = "Audio Off";
-        //  }else{
-        //   audiobtn.textContent = "Audio On";
-        //   publication.track.stop();
-        //   publication.unpublish();
-        //  }
         });
       });
 
@@ -118,8 +107,8 @@ button.addEventListener("click", () => {
         console.log("trackSubscribed");
         room.participants.forEach((participant) => {
           participant.tracks.forEach((publication) => {
-            console.log(publication.track);
-            if (publication.track.kind) {
+            console.log(publication.track.kind);
+            if (publication.track) {
               const localMediaContainer =
                 document.getElementById("remote-media-div");
               localMediaContainer.appendChild(publication.track.attach());
