@@ -1,9 +1,36 @@
 const token = document.getElementById("token");
-const button = document.getElementById("button");
 
-button.addEventListener("click", () => {
+function roomBtn() {
   const roomToken = token.value;
 
+   // disconnect button
+   const disconnected = document.createElement("button");
+   disconnected.textContent = "disconnected";
+   disconnected.classList.add("btn","btn-info","m-3")
+   document.body.appendChild(disconnected);
+
+   // video button 
+   const newButton = document.createElement("button");
+   newButton.textContent = "Video On";
+   newButton.classList.add("btn","btn-warning","m-3")
+   document.body.appendChild(newButton);
+
+   const videobtn = document.createElement("button");
+   videobtn.textContent = "Video Off";
+   videobtn.classList.add("btn","btn-danger","m-3")
+
+
+   //audio button
+   const audioButton = document.createElement("button");
+   audioButton.textContent = "Audio On";
+   audioButton.classList.add("btn","btn-warning","m-3")
+   document.body.appendChild(audioButton);
+
+   const audiobtn = document.createElement("button");
+   audiobtn.textContent = "Audio Off";
+   audiobtn.classList.add("btn","btn-danger","m-3")
+
+   
   Twilio.Video.connect(roomToken, {
     name: "demoroom",
     audio: false,
@@ -27,32 +54,25 @@ button.addEventListener("click", () => {
         );
       });
 
-      // for video
+     
 
-      const newButton = document.createElement("button");
-      newButton.textContent = "Video On";
-      newButton.classList.add("btn","btn-warning","m-3")
-      document.body.appendChild(newButton);
+      // for video streaming
 
       newButton.addEventListener("click", () => {
         document.body.removeChild(newButton);
         document.body.appendChild(videobtn);
 
-        Twilio.Video.createLocalVideoTrack().then((track) => {
-          console.log("track", track);
+        Twilio.Video.createLocalVideoTrack().then((localVideoTrack) => {
+          console.log("track", localVideoTrack);
 
           const localMediaContainer = document.getElementById("local-media");
-          localMediaContainer?.appendChild(track.attach());
+          localMediaContainer?.appendChild(localVideoTrack.attach());
 
-          room.localParticipant.publishTrack(track);
+          room.localParticipant.publishTrack(localVideoTrack);
         });
       });
 
-      const videobtn = document.createElement("button");
-      videobtn.textContent = "Video Off";
-      videobtn.classList.add("btn","btn-danger","m-3")
-
-
+     // video streaming stop and remove html element
       videobtn.addEventListener("click", () => {
         document.body.removeChild(videobtn);
         document.body.appendChild(newButton);
@@ -62,32 +82,33 @@ button.addEventListener("click", () => {
           publication.unpublish();
 
           publication.track.detach().forEach(function (mediaElement) {
+            // console.log(mediaElement)
             mediaElement.remove();
           });
         });
       });
 
-      // for audio
-      const audioButton = document.createElement("button");
-      audioButton.textContent = "Audio On";
-      audioButton.classList.add("btn","btn-warning","m-3")
-      document.body.appendChild(audioButton);
 
+      // for audio streaming
       audioButton.addEventListener("click", () => {
         document.body.removeChild(audioButton);
         document.body.appendChild(audiobtn);
+       
+       
 
-        Twilio.Video.createLocalAudioTrack({ audio: true }).then((track) => {
-          room.localParticipant.publishTrack(track);
-          console.log(track);
+
+        Twilio.Video.createLocalAudioTrack({ audio: true }).then((localAudioTrack) => {
+          room.localParticipant.publishTrack(localAudioTrack);
+          console.log(localAudioTrack);
         });
+
+        // if(room.localParticipant.videoTracks.size > 0){
+        //   const currentTrack = Array.from(room.localParticipant.videoTracks.values())[0];
+        //   room.localParticipant.unpublishTrack(currentTrack.track);
+        // }
       });
 
-      const audiobtn = document.createElement("button");
-      audiobtn.textContent = "Audio Off";
-      audiobtn.classList.add("btn","btn-danger","m-3")
-      
-
+      // audio streaming stop
       audiobtn.addEventListener("click", () => {
         document.body.removeChild(audiobtn);
         document.body.appendChild(audioButton);
@@ -103,7 +124,7 @@ button.addEventListener("click", () => {
       room.on("trackSubscribed", () => {
         console.log("trackSubscribed");
         room.participants.forEach((participant) => {
-         
+        //  console.log(participant)
           participant.tracks.forEach((publication) => {
             
             console.log(publication);
@@ -114,8 +135,7 @@ button.addEventListener("click", () => {
               audiotrack.appendChild(publication.track.attach());
 
             } else if (publication.track.kind === "video") {
-
-              const localMediaContainer =
+                const localMediaContainer =
                 document.getElementById("remote-media-div");
               localMediaContainer.appendChild(publication.track.attach());
             }
@@ -130,30 +150,22 @@ button.addEventListener("click", () => {
         });
       });
 
+
       // disconnected
-      // const disconnected = document.createElement("button");
-      // disconnected.textContent = "disconnected";
-      // // document.body.appendChild(disconnected);
+      disconnected.addEventListener("click", () => {
+        room.on("disconnected", (room) => {
 
-      // disconnected.addEventListener("click", () => {
-      //   console.log(room);
-      //   room.on("disconnected", (room) => {
-      //     // Detach the local media elements
-      //     room.localParticipant.tracks.forEach((publication) => {
-      //       const attachedElements = publication.track.detach();
-      //       attachedElements.forEach((element) => element.remove());
-      //     });
-      //   });
-
-      //   document.body.removeChild(disconnected);
-      //   document.body.removeChild(videobtn);
-      //   document.body.removeChild(videobtn);
-      //   // To disconnect from a Room
-      //   room.disconnect();
-      //   console.log("disconnected to the room");
-      // });
+          room.localParticipant.tracks.forEach((publication) => {
+            const attachedElements = publication.track.detach();
+            attachedElements.forEach((element) => element.remove());
+          });
+        });
+        room.disconnect();
+        console.log("disconnected to the room");
+        window.location.reload()
+      });
     })
     .catch((error) => {
       console.log(`Unable to connect to Room: ${error.message}`);
     });
-});
+};
