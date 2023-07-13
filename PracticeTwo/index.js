@@ -3,34 +3,32 @@ const token = document.getElementById("token");
 function roomBtn() {
   const roomToken = token.value;
 
-   // disconnect button
-   const disconnected = document.createElement("button");
-   disconnected.textContent = "disconnected";
-   disconnected.classList.add("btn","btn-info","m-3")
-   document.body.appendChild(disconnected);
+  // disconnect button
+  const disconnected = document.createElement("button");
+  disconnected.textContent = "disconnected";
+  disconnected.classList.add("btn", "btn-info", "m-3");
+  document.body.appendChild(disconnected);
 
-   // video button 
-   const newButton = document.createElement("button");
-   newButton.textContent = "Video On";
-   newButton.classList.add("btn","btn-warning","m-3")
-   document.body.appendChild(newButton);
+  // video button
+  const newButton = document.createElement("button");
+  newButton.textContent = "Video On";
+  newButton.classList.add("btn", "btn-warning", "m-3");
+  document.body.appendChild(newButton);
 
-   const videobtn = document.createElement("button");
-   videobtn.textContent = "Video Off";
-   videobtn.classList.add("btn","btn-danger","m-3")
+  const videobtn = document.createElement("button");
+  videobtn.textContent = "Video Off";
+  videobtn.classList.add("btn", "btn-danger", "m-3");
 
+  //audio button
+  const audioButton = document.createElement("button");
+  audioButton.textContent = "Audio On";
+  audioButton.classList.add("btn", "btn-warning", "m-3");
+  document.body.appendChild(audioButton);
 
-   //audio button
-   const audioButton = document.createElement("button");
-   audioButton.textContent = "Audio On";
-   audioButton.classList.add("btn","btn-warning","m-3")
-   document.body.appendChild(audioButton);
+  const audiobtn = document.createElement("button");
+  audiobtn.textContent = "Audio Off";
+  audiobtn.classList.add("btn", "btn-danger", "m-3");
 
-   const audiobtn = document.createElement("button");
-   audiobtn.textContent = "Audio Off";
-   audiobtn.classList.add("btn","btn-danger","m-3")
-
-   
   Twilio.Video.connect(roomToken, {
     name: "demoroom",
     audio: false,
@@ -54,8 +52,6 @@ function roomBtn() {
         );
       });
 
-     
-
       // for video streaming
 
       newButton.addEventListener("click", () => {
@@ -72,7 +68,7 @@ function roomBtn() {
         });
       });
 
-     // video streaming stop and remove html element
+      // video streaming stop and remove html element
       videobtn.addEventListener("click", () => {
         document.body.removeChild(videobtn);
         document.body.appendChild(newButton);
@@ -88,24 +84,17 @@ function roomBtn() {
         });
       });
 
-
       // for audio streaming
       audioButton.addEventListener("click", () => {
         document.body.removeChild(audioButton);
         document.body.appendChild(audiobtn);
-       
-       
 
-
-        Twilio.Video.createLocalAudioTrack({ audio: true }).then((localAudioTrack) => {
-          room.localParticipant.publishTrack(localAudioTrack);
-          console.log(localAudioTrack);
-        });
-
-        // if(room.localParticipant.videoTracks.size > 0){
-        //   const currentTrack = Array.from(room.localParticipant.videoTracks.values())[0];
-        //   room.localParticipant.unpublishTrack(currentTrack.track);
-        // }
+        Twilio.Video.createLocalAudioTrack({ audio: true }).then(
+          (localAudioTrack) => {
+            room.localParticipant.publishTrack(localAudioTrack);
+            console.log(localAudioTrack);
+          }
+        );
       });
 
       // audio streaming stop
@@ -124,20 +113,19 @@ function roomBtn() {
       room.on("trackSubscribed", () => {
         console.log("trackSubscribed");
         room.participants.forEach((participant) => {
-        //  console.log(participant)
+          //  console.log(participant)
           participant.tracks.forEach((publication) => {
-            
             console.log(publication);
 
             if (publication.track.kind === "audio") {
-
               const audiotrack = document.createElement("audio");
               audiotrack.appendChild(publication.track.attach());
-
             } else if (publication.track.kind === "video") {
-                const localMediaContainer =
+              console.log(localParticipant);
+              const remoteMediaContainer =
                 document.getElementById("remote-media-div");
-              localMediaContainer.appendChild(publication.track.attach());
+              if (remoteMediaContainer.children.length === 0)
+                remoteMediaContainer.appendChild(publication.track.attach());
             }
           });
         });
@@ -150,11 +138,9 @@ function roomBtn() {
         });
       });
 
-
       // disconnected
       disconnected.addEventListener("click", () => {
         room.on("disconnected", (room) => {
-
           room.localParticipant.tracks.forEach((publication) => {
             const attachedElements = publication.track.detach();
             attachedElements.forEach((element) => element.remove());
@@ -162,10 +148,10 @@ function roomBtn() {
         });
         room.disconnect();
         console.log("disconnected to the room");
-        window.location.reload()
+        window.location.reload();
       });
     })
     .catch((error) => {
       console.log(`Unable to connect to Room: ${error.message}`);
     });
-};
+}
