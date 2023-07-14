@@ -1,80 +1,81 @@
 const token = document.getElementById("token");
 
-// function videoToggle() {
-//     let isChacked = false;
-//     isChacked = !isChacked
+function videoRoom() {
+  const roomToken = token.value;
 
-//     isChacked ? videoToggle.id = "videoToggle" : "";
-// }
+  const videoToggle = document.getElementById("videotoggle");
+  const audiotoggle = document.getElementById("audiotoggle");
+  const disconnected = document.getElementById("disconnected");
+  const showDemo = document.getElementById('main-content');
 
-function videoRoom(){
-    const roomToken = token.value;
+  Twilio.Video.connect(roomToken, {
+    name: "demoroom",
+    audio: false,
+    video: false,
+  })
+    .then((room) => {
 
-    const videoToggle = document.getElementById('videotoggle');
-    const audiotoggle = document.getElementById('audiotoggle');
-    const disconnected = document.getElementById('disconnected');
-    
-    Twilio.Video.connect(roomToken, {
-        name: "demoroom",
-        audio: false,
-        video: false,
-      }).then((room) => {
-        // local user name
-        const localUserName = document.getElementById('local-user-name');
-        localUserName.innerHTML = room.localParticipant.identity
+      showDemo.classList.remove("main-content")
 
-        //remote user name
-        room.on("participantConnected", (participant) => {
-            const remoteUserName = document.getElementById('remote-user-name');
-            remoteUserName.innerHTML = participant.identity;
+      // local user name
+      const localUserName = document.getElementById("local-user-name");
+      localUserName.innerHTML = room.localParticipant.identity;
+
+      //remote user name
+      room.participants.forEach((participant) => {
+        const remoteUserName = document.getElementById("remote-user-name");
+        remoteUserName.innerHTML = participant.identity;
+      });
+
+      // video streaming
+      let isVideoChecked = false;
+      videoToggle.addEventListener("click", () => {
+        isVideoChecked = !isVideoChecked;
+
+        if (isVideoChecked) {
+          Twilio.Video.createLocalVideoTrack().then((localVideoTrack) => {
+            console.log("track", localVideoTrack);
+
+            const localMediaContainer = document.getElementById("local-track");
+            const localVideo = localVideoTrack.attach();
+            localVideo.style.width = "386px";
+            if (localMediaContainer.children.length === 0) {
+              localMediaContainer?.append(localVideo);
+              room.localParticipant.publishTrack(localVideoTrack);
+            }
           });
-       
-          // video streaming
-          videoToggle.addEventListener("click", () => {
-            // videoToggle.removeAttribute('id');
-            videoToggle.id = 'offVideoToggle';
+        } else {
+          room.localParticipant.videoTracks.forEach((publication) => {
+            publication.track.stop();
+            publication.unpublish();
 
-            Twilio.Video.createLocalVideoTrack().then((localVideoTrack) => {
-              console.log("track", localVideoTrack);
-    
-              const localMediaContainer = document.getElementById("local-track");
-              const localVideo = localVideoTrack.attach()
-              localVideo.style.width = "386px"
-              if (localMediaContainer.children.length === 0){
-                localMediaContainer?.append(localVideo);
-                room.localParticipant.publishTrack(localVideoTrack);
-              } 
+            publication.track.detach().forEach(function (mediaElement) {
+              // console.log(mediaElement)
+              mediaElement.remove();
             });
           });
+        }
+      });
 
-           // video streaming stop and remove html element
-           videoToggle.addEventListener("click", () => {
-            videoToggle.id = 'videoToggle'
-        
-            // offVideoToggle.setAttribute('id', videoToggle)
-            room.localParticipant.videoTracks.forEach((publication) => {
-
-          publication.track.stop();
-          publication.unpublish();
-
-          publication.track.detach().forEach(function (mediaElement) {
-            // console.log(mediaElement)
-            mediaElement.remove();
+      // for audio streaming
+      let isAudioChecked = false;
+      audiotoggle.addEventListener("click", () => {
+        isAudioChecked = !isAudioChecked;
+        if (isAudioChecked) {
+          Twilio.Video.createLocalAudioTrack({ audio: true }).then(
+            (localAudioTrack) => {
+              room.localParticipant.publishTrack(localAudioTrack);
+              console.log(localAudioTrack);
+            }
+          );
+        } else {
+          room.localParticipant.audioTracks.forEach((publication) => {
+            publication.track.stop();
+            publication.unpublish();
+            console.log(publication.track);
           });
-        });
+        }
       });
-
-
-    // for audio streaming
-    audiotoggle.addEventListener("click", () => {
-        Twilio.Video.createLocalAudioTrack({ audio: true }).then(
-          (localAudioTrack) => {
-            room.localParticipant.publishTrack(localAudioTrack);
-            console.log(localAudioTrack);
-          }
-        );
-      });
-
 
       //remote user
 
@@ -86,14 +87,16 @@ function videoRoom(){
             console.log(publication);
 
             if (publication.track.kind === "audio") {
+
               const audiotrack = document.createElement("audio");
               audiotrack.appendChild(publication.track.attach());
+
             } else if (publication.track.kind === "video") {
-            //   console.log(localParticipant);
-              const remoteMediaContainer =
-                document.getElementById("remote-media-div");
-               const remoteVideo = publication.track.attach();
-               remoteVideo.style.width = "486px"
+
+              const remoteMediaContainer = document.getElementById("remote-media-div");
+              const remoteVideo = publication.track.attach();
+              remoteVideo.style.width = "486px";
+
               if (remoteMediaContainer.children.length === 0)
                 remoteMediaContainer.appendChild(remoteVideo);
             }
@@ -120,8 +123,8 @@ function videoRoom(){
         console.log("disconnected to the room");
         window.location.reload();
       });
-
-      }).catch((error) => {
-        console.log(`can't connect to room ${error.message}`)
-      })
+    })
+    .catch((error) => {
+      console.log(`can't connect to room ${error.message}`);
+    });
 }
