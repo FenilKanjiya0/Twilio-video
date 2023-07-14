@@ -31,7 +31,16 @@
         </div>
         <div class="col-lg-4 text-end mt-3">
           <button class="btn btn-success" onclick="videoRoom()">Join</button>
+
+          <div class="toast position-absolute top end" role="alert" aria-live="assertive" aria-atomic="true" id="epicToast">
+            <div class="d-flex">
+              <div class="toast-body" id="display-message">
+              </div>
+              <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
         </div>
+       
       </div>
 
       <div class="row mt-5 main-content" id="main-content">
@@ -56,8 +65,8 @@
                     <button class="btn btn-danger" id="disconnected">Disconnected</button>
                 </div>
                 <div class="input-group mb-3 mt-3">
-                    <input type="text" class="form-control" placeholder="Enter your text here..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">send</button>
+                    <input type="text" class="form-control" placeholder="Enter your text here..." id="input-message">
+                    <button class="btn btn-outline-secondary" type="button" id="button-message">send</button>
                   </div>
              </div>
             </div>

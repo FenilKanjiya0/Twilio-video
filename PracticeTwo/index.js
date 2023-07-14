@@ -148,7 +148,7 @@ function roomBtn() {
         });
         room.disconnect();
         console.log("disconnected to the room");
-        window.location.reload();
+        // window.location.reload();
       });
     })
     .catch((error) => {
