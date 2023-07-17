@@ -3,7 +3,7 @@ const message = document.getElementById("input-message");
 
 var option = {
   animation: true,
-  delay: 2000,
+  delay: 10000,
 };
 
 function tosty() {
@@ -20,6 +20,7 @@ function videoRoom() {
   const disconnected = document.getElementById("disconnected");
   const showDemo = document.getElementById("main-content");
   const showRemote = document.getElementById('remote-display')
+  const hideToken = document.getElementById('token-desing');
   const messageSend = document.getElementById("button-message");
 
   const dataTrack = new Twilio.Video.LocalDataTrack();
@@ -32,6 +33,7 @@ function videoRoom() {
   })
     .then((room) => {
       showDemo.classList.remove("main-content");
+      hideToken.classList.add('main-content')
 
       // local user name
       const localUserName = document.getElementById("local-user-name");
@@ -65,7 +67,8 @@ function videoRoom() {
 
             const localMediaContainer = document.getElementById("local-track");
             const localVideo = localVideoTrack.attach();
-            localVideo.style.width = "386px";
+            localVideo.style.width = "250px";
+            localVideo.style.borderRadius = "29px"
             if (localMediaContainer.children.length === 0) {
               localMediaContainer?.append(localVideo);
               room.localParticipant.publishTrack(localVideoTrack);
@@ -134,7 +137,8 @@ function videoRoom() {
               const remoteMediaContainer =
                 document.getElementById("remote-media-div");
               const remoteVideo = publication.track.attach();
-              remoteVideo.style.width = "486px";
+              remoteVideo.style.width = "630px";
+              remoteVideo.style.borderRadius = "29px"
 
               if (remoteMediaContainer.children.length === 0)
                 remoteMediaContainer.appendChild(remoteVideo);

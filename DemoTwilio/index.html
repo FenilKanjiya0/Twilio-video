@@ -14,12 +14,15 @@
       .main-content{
         display:none;
       }
+      .remote-display{
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div class="container mt-4">
       <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
           <div class="input-group">
             <span class="input-group-text">Token</span>
             <textarea
@@ -29,8 +32,8 @@
             ></textarea>
           </div>
         </div>
-        <div class="col-lg-4 text-end mt-3">
-          <button class="btn btn-success" onclick="videoRoom()">Join</button>
+        <div class="col-lg-2 text-end mt-3">
+          <button class="btn btn-success" onclick="videoRoom()">Join Metting</button>
 
           <div class="toast position-absolute top end" role="alert" aria-live="assertive" aria-atomic="true" id="epicToast">
             <div class="d-flex">
@@ -72,7 +75,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-7">
+        <div class="col-lg-7 remote-display" id="remote-display">
           <div class="card text-center">
             <div class="card-header"><b id="remote-user-name">Remote Name</b></div>
             <div class="card-body">

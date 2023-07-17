@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Twilio demo</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <style>
+      .main-content{
+        display:none;
+      }
+      .remote-display{
+        visibility:hidden;
+      }
+      .main-design{
+        border-radius: 10px;
+        background-color: #e2e7e9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-2">
+      <div class="row" id="token-desing">
+        <div class="col-lg-10">
+          <div class="input-group">
+            <input
+              class="form-control"
+              aria-label="With textarea"
+              placeholder="Enter your token here.."
+              id="token"
+              autocomplete="off"
+              style="border-radius: 20px 0px 0px 20px;"
+            ></input>
+            <button class="btn btn-success" style="border-radius: 0px 20px 20px 0px;" onclick="videoRoom()">Join Call</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="row main-content main-design" id="main-content">
+        <span><strong>Metting</strong></span>
+        <div class="col-lg-12 remote-display d-flex justify-content-center" id="remote-display">
+            <div class="card text-center border-0" style="width: 700px; box-shadow: 11px 4px 11px -1px #bab7b7; border-radius: 35px;">
+              <b id="remote-user-name">Remote Name</b>
+                <div class="remote-media" style="height: 477px;" id="remote-media-div"></div>
+          </div>
+          </div>
+
+          <div class="toast position-absolute top text-bg-warning" role="alert" aria-live="assertive" aria-atomic="true" id="epicToast">
+            <div class="d-flex">
+              <div class="toast-body" id="display-message">
+              </div>
+              <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-3 d-flex align-items-end mb-5">
+            <div class="input-group mb-3 mt-3">
+              <input type="text" class="form-control" placeholder="Type a message..." id="input-message">
+              <button class="btn btn-info" type="button" id="button-message">send</button>
+            </div>
+          </div>
+        <div class="col-lg-4 mt-5 d-flex justify-content-end align-items-end mb-5">
+            <div class="card text-center border-0" style="width: 300px; height: 80px; box-shadow: 11px 4px 11px -1px #bab7b7; border-radius: 21px;">
+              <div class="card-body">
+                <div class="row">
+                  
+                    <div class="col-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="videotoggle">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Video</label>
+                          </div>
+                          <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="audiotoggle">
+                            <label class="form-check-label" for="flexSwitchCheckDefault">Audio</label>
+                          </div>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger" id="disconnected">End Call</button>
+                    </div>
+
+                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5 d-flex justify-content-end">
+            <div class="card text-center border-0" style="width: 287px; box-shadow: 11px 4px 11px -1px #bab7b7; border-radius: 35px;">
+              <b id="local-user-name">User Name</b>
+               <div class="local-media" style="height: 200px;" id="local-track"></div>
+            </div>
+          </div>
+    </div>
+       
+      </div>
+    </div>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="./Demo.js"></script>
+    <script src="//sdk.twilio.com/js/video/releases/2.27.0/twilio-video.min.js"></script>
+  </body>
+</html>
+
+
