@@ -3,7 +3,7 @@ const message = document.getElementById("input-message");
 
 var option = {
   animation: true,
-  delay: 10000,
+  delay: 2000,
 };
 
 function tosty() {
@@ -63,7 +63,6 @@ function videoRoom() {
 
         if (isVideoChecked) {
           Twilio.Video.createLocalVideoTrack().then((localVideoTrack) => {
-            console.log("track", localVideoTrack);
 
             const localMediaContainer = document.getElementById("local-track");
             const localVideo = localVideoTrack.attach();
@@ -82,7 +81,6 @@ function videoRoom() {
             publication.unpublish();
 
             publication.track.detach().forEach(function (mediaElement) {
-              // console.log(mediaElement)
               mediaElement.remove();
             });
           });
@@ -97,7 +95,6 @@ function videoRoom() {
           Twilio.Video.createLocalAudioTrack({ audio: true }).then(
             (localAudioTrack) => {
               room.localParticipant.publishTrack(localAudioTrack);
-              console.log(localAudioTrack);
             }
           ).catch((error) => {
             console.log(`enable to stream audio ${error}`)
@@ -112,7 +109,6 @@ function videoRoom() {
       });
 
       // messages
-
       messageSend.addEventListener("click", () => {
         const messageText = message.value;
         dataTrack.send(JSON.stringify({
@@ -123,12 +119,9 @@ function videoRoom() {
       });
 
       //remote user
-
       room.on("trackSubscribed", () => {
-        console.log("trackSubscribed");
         room.participants.forEach((participant) => {
           participant.tracks.forEach((publication) => {
-            console.log(publication);
 
             if (publication.track.kind === "audio") {
               const audiotrack = document.createElement("audio");
@@ -144,10 +137,8 @@ function videoRoom() {
                 remoteMediaContainer.appendChild(remoteVideo);
             } else if (publication.track.kind === "data") {
               publication.track.on("message", (data) => {
-                console.log(publication.track)
                 const displayMessage =
                   document.getElementById("display-message");
-                  console.log(data)
                   const val = (JSON.parse(data))  
                   displayMessage.innerHTML = val.msg;
                 tosty();
@@ -158,7 +149,6 @@ function videoRoom() {
       });
 
       room.on("trackUnsubscribed", function (track) {
-        console.log("trackUnsubscribed");
         if (track.kind === "video" || track.kind === "audio") {
           track.detach().forEach(function (mediaElement) {
             mediaElement.remove();
@@ -181,7 +171,6 @@ function videoRoom() {
         });
         room.disconnect();
         location.reload();
-        console.log("disconnect successful")
       });
     })
     .catch((error) => {
